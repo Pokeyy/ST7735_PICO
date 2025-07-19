@@ -1,0 +1,9 @@
+build
+!.vscode/*
+/build/
+*/build/
+build*/
+
+CMakeFiles/
+CMakeCache.txt
+cmake
