@@ -50,10 +50,10 @@
 #define ST7735_WHITE                0xFF
 
 typedef struct {
-    cs_pin;
-    rs_pin;
-    rst_pin;
-    spi_port;
+    uint cs_pin;
+    uint rs_pin;
+    uint rst_pin;
+    spi_inst_t *spi_port;
 } st7735_pin_config_t;
 
 /********************** FUNCTION PROTOTYPES ***************/

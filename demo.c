@@ -2,7 +2,7 @@
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
 #include "include/hardware.h"
-#include "ST7735_TFT.h"
+#include "include/ST7735_TFT.h"
 
 // To Do List:
 // Understand timings still for each pin change of SPI
@@ -107,49 +107,104 @@ void st7735_init_display(const st7735_pin_config_t *pins) {
     write_data(pins, 0x13);                  // lower byte
 
 
-    uint8_t color[2] = {0xF8, 0x00}; // blue
+    write_command(pins, ST77XX_RAMWR);
+    
+
+    uint8_t color[2] = {0xF8, 0x00}; // red
     uint8_t buffer[3*3*2];
     for(int i = 0; i < 3*3; i++) {
         buffer[i*2] = color[0];
         buffer[i * 2 + 1] = color[1];
     }
-
-    // RAMWR (memory write) (16-bit color) (R-G-B / 5-6-5)
-    write_command(pins, ST77XX_RAMWR);
     write_data_buffer(pins, buffer, sizeof(buffer));
-    // write_data(pins, 0b00000000);            // Upper byte      
-    // write_data(pins, 0b00011111);            // Lower byte
-    printf("Display init complete, pixel written.\n");
+
+    /////////////////////////
+        // CASET (COlumn address set)
+    write_command(pins, ST77XX_CASET);
+
+    // Start position (X)
+    write_data(pins, 0x00);                  // upper byte
+    write_data(pins, 0x50);                  // lower byte
+
+    // End Position (X)
+    write_data(pins, 0x00);                  // upper byte
+    write_data(pins, 0x52);                  // lower byte
+
+    // RASET (row address set)
+    write_command(pins, ST77XX_RASET);
+
+    // Start position (Y)
+    write_data(pins, 0x00);                  // upper byte
+    write_data(pins, 0x11);                  // lower byte 
+
+    // End Position (Y)
+    write_data(pins, 0x00);                  // upper byte
+    write_data(pins, 0x13);                  // lower byte
+
+
+    write_command(pins, ST77XX_RAMWR);
+    
+
+    uint8_t color1[2] = {0xF8, 0x00}; // red
+    uint8_t buffer1[3*3*2];
+    for(int i = 0; i < 3*3; i++) {
+        buffer1[i*2] = color[0];
+        buffer1[i * 2 + 1] = color[1];
+    }
+    write_data_buffer(pins, buffer1, sizeof(buffer1));
+
+
+
+    ////////////////////////////////////////////////////////
+
+        // CASET (COlumn address set)
+    write_command(pins, ST77XX_CASET);
+
+    // Start position (X)
+    write_data(pins, 0x00);                  // upper byte
+    write_data(pins, 0x03);                  // lower byte
+
+    // End Position (X)
+    write_data(pins, 0x00);                  // upper byte
+    write_data(pins, 0x57);                  // lower byte
+
+    // RASET (row address set)
+    write_command(pins, ST77XX_RASET);
+
+    // Start position (Y)
+    write_data(pins, 0x00);                  // upper byte
+    write_data(pins, 0x60);                  // lower byte 
+
+    // End Position (Y)
+    write_data(pins, 0x00);                  // upper byte
+    write_data(pins, 0x62);                  // lower byte
+
+
+    write_command(pins, ST77XX_RAMWR);
+    
+
+    uint8_t color2[2] = {0xF8, 0x00}; // red
+    uint8_t buffer2[85*3*2];
+    for(int i = 0; i < 89*3; i++) {
+        buffer2[i*2] = color[0];
+        buffer2[i * 2 + 1] = color[1];
+    }
+    write_data_buffer(pins, buffer2, sizeof(buffer2));
 
     sleep_ms(2000);
     while(1);
 }
 
-void st7735_spi_init() {
-    gpio_init(SPI_ST7735_CS);
-    gpio_set_dir(SPI_ST7735_CS, GPIO_OUT);
-    gpio_put(SPI_ST7735_CS, 1);                 // Chip select is active-low, so keep high when unselected
-
-    gpio_init(SPI_ST7735_RS);
-    gpio_set_dir(SPI_ST7735_RS, GPIO_OUT);
-    gpio_put(SPI_ST7735_RS, 0);
-
-    gpio_init(SPI_ST7735_RST);
-    gpio_set_dir(SPI_ST7735_RST, GPIO_OUT);
-    gpio_put(SPI_ST7735_RST, 0);
-}
 
 int main()
 {
     stdio_init_all();
+    st7735_spi_init();
 
-    gpio_put(SPI_ST7735_LEDA, 0);
-    sleep_ms(50);
-    gpio_put(SPI_ST7735_LEDA, 1);
 
-    gpio_put(SPI_ST7735_RST, 0);
     sleep_ms(50);
     gpio_put(SPI_ST7735_RST, 1);
+    sleep_ms(50);
 
     st7735_init_display(&interface_pins);
 }

@@ -28,37 +28,37 @@ set(PICO_BOARD pico2 CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(pipico-st7735 C CXX ASM)
+project(ST7735_PICO C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(pipico-st7735 demo.cpp )
+add_executable(ST7735_PICO demo.c src/hardware.c)
 
-pico_set_program_name(pipico-st7735 "pipico-st7735")
-pico_set_program_version(pipico-st7735 "0.1")
+pico_set_program_name(ST7735_PICO "ST7735_PICO")
+pico_set_program_version(ST7735_PICO "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(pipico-st7735 0)
-pico_enable_stdio_usb(pipico-st7735 0)
+pico_enable_stdio_uart(ST7735_PICO 0)
+pico_enable_stdio_usb(ST7735_PICO 0)
 
 # Add the standard library to the build
-target_link_libraries(pipico-st7735
+target_link_libraries(ST7735_PICO
         pico_stdlib)
 
 # Add the standard include files to the build
-target_include_directories(pipico-st7735 PRIVATE
-        ${CMAKE_CURRENT_LIST_DIR}
-)
+# target_include_directories(ST7735_PICO PRIVATE
+#         ${CMAKE_CURRENT_LIST_DIR}
+# )
 
 # Add any user requested libraries
-target_link_libraries(pipico-st7735 
+target_link_libraries(ST7735_PICO 
         hardware_spi
         )
 
-pico_add_extra_outputs(pipico-st7735)
+pico_add_extra_outputs(ST7735_PICO)
 
 target_include_directories(ST7735_PICO PRIVATE include)
 target_include_directories(ST7735_PICO PRIVATE src)

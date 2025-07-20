@@ -1,6 +1,7 @@
 #ifndef _HARDWARE_H
 #define _HARDWARE_H
 
+
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
 
@@ -31,12 +32,12 @@
     #define SPI_ST7735_LEDA                 16
 #endif
 
-#ifndef SPI_ST7735_MOSI                     3           // unsure if needs to be defined
-    #define SPI_ST7735_MOSI
+#ifndef SPI_ST7735_MOSI                                // unsure if needs to be defined
+    #define SPI_ST7735_MOSI                 3
 #endif
 
-#ifndef SPI_ST7735_SCK                      2           // unsure if needs to be defined
-    #define SPI_ST7735_SCK
+#ifndef SPI_ST7735_SCK                                 // unsure if needs to be defined
+    #define SPI_ST7735_SCK                  2
 #endif
 
 // Declarations / Prototyping

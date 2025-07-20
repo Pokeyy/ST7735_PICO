@@ -107,7 +107,7 @@ void st7735_init_display(const st7735_pin_config_t *pins) {
     write_data(pins, 0x13);                  // lower byte
 
 
-    uint8_t color[2] = {0xF8, 0x00}; // blue
+    uint8_t color[2] = {0xF8, 0x00}; // red
     uint8_t buffer[3*3*2];
     for(int i = 0; i < 3*3; i++) {
         buffer[i*2] = color[0];
