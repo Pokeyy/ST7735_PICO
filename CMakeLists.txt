@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(pipico-st7735 pipico-st7735.cpp )
+add_executable(pipico-st7735 demo.cpp )
 
 pico_set_program_name(pipico-st7735 "pipico-st7735")
 pico_set_program_version(pipico-st7735 "0.1")
@@ -59,4 +59,7 @@ target_link_libraries(pipico-st7735
         )
 
 pico_add_extra_outputs(pipico-st7735)
+
+target_include_directories(ST7735_PICO PRIVATE include)
+target_include_directories(ST7735_PICO PRIVATE src)
 
