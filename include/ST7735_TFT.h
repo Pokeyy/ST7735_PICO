@@ -46,8 +46,9 @@
 
 // Color Code Definitions
 
-#define ST7735_BLACK                0x00
-#define ST7735_WHITE                0xFF
+#define ST7735_BLACK                0x0000
+#define ST7735_WHITE                0xFFFF
+#define ST7735_RED                  0xF800
 
 typedef struct {
     uint cs_pin;
@@ -62,8 +63,12 @@ typedef struct {
 void write_command(const st7735_pin_config_t *pins, uint8_t cmd);
 void write_data(const st7735_pin_config_t *pins, uint8_t data);
 
+void write_data_buffer(const st7735_pin_config_t *pins, const uint8_t *data, size_t len);
+
 // Functionality
-void fill_screen();
+void st7735_init_display();
+
+void fill_screen(uint16_t color);
 
 void change_framerate();
 

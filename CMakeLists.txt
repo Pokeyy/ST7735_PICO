@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(ST7735_PICO demo.c src/hardware.c)
+add_executable(ST7735_PICO demo.c src/hardware.c src/ST7735_TFT.c)
 
 pico_set_program_name(ST7735_PICO "ST7735_PICO")
 pico_set_program_version(ST7735_PICO "0.1")
