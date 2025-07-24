@@ -153,5 +153,5 @@ int main()
     sleep_ms(50);
 
     st7735_init_display();
-    fill_screen(ST7735_RED);
+    fill_screen(ST7735_BLUE);
 }

@@ -87,19 +87,3 @@ void st7735_init_display() {
     sleep_ms(100);
 
 }
-
-
-// int main()
-// {
-//     stdio_init_all();
-
-//     gpio_put(SPI_ST7735_LEDA, 0);
-//     sleep_ms(50);
-//     gpio_put(SPI_ST7735_LEDA, 1);
-
-//     gpio_put(SPI_ST7735_RST, 0);
-//     sleep_ms(50);
-//     gpio_put(SPI_ST7735_RST, 1);
-
-//     st7735_init_display(&interface_pins);
-// }
