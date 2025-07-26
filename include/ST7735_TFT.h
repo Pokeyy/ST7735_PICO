@@ -55,6 +55,8 @@
 #define ST7735_CYAN                 0x07FF
 #define ST7735_MAGENTA              0xF81F
 
+extern uint8_t disp_width, disp_height;
+
 typedef struct {
     uint cs_pin;
     uint rs_pin;
@@ -65,13 +67,17 @@ typedef struct {
 /********************** FUNCTION PROTOTYPES ***************/
 
 // For SPI:
-void write_command(const st7735_pin_config_t *pins, uint8_t cmd);
-void write_data(const st7735_pin_config_t *pins, uint8_t data);
+void write_command(uint8_t cmd);
+void write_data(uint8_t data);
 
-void write_data_buffer(const st7735_pin_config_t *pins, const uint8_t *data, size_t len);
+//void write_data_buffer(const st7735_pin_config_t *pins, const uint8_t *data, size_t len);
 
 // Functionality
 void st7735_init_display();
+
+void set_AddrArea(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
+
+void fill_rectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color);
 
 void fill_screen(uint16_t color);
 
@@ -89,11 +95,11 @@ void draw_line();
 // RED_TAB
 
 
-// BLACK_TAB
+// BLACK_TAB 
 
 
 // BLUE_TAB
 
 
 
-#endif
+#endif 
