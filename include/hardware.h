@@ -43,7 +43,7 @@
     #define SPI_ST7735_SCK                  2
 #endif
 
-static inline void tft_cs_low() {                       // Timing found at Pg25 (unsure about exact uses of NOP
+static inline void tft_cs_low() {                       // Timing found at Pg25 (unsure about exact # of NOP uses)
     asm volatile("nop \n nop \n nop"); \
     gpio_put(SPI_ST7735_CS, 0);
     asm volatile("nop \n nop \n nop"); \

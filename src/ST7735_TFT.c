@@ -75,12 +75,12 @@ void fill_screen(uint16_t color) {
     fill_rectangle(0, 0, tft_width, tft_height, color);
 }
 
-
 void draw_pixel(uint8_t x, uint8_t y, uint16_t color) {
-    if( (x >= disp_width) || y >= disp_height )
+    if((x >= tft_width) || (y >= tft_height)) 
         return;
-    // setAddrArea();
-    //write_data()
+    set_AddrArea(x, y, x+1, y+1);
+    write_data(color >> 8);
+    write_data(color);
 }
 
 void st7735_init_display() {
@@ -110,47 +110,3 @@ void st7735_init_display() {
     sleep_ms(100);
 
 }
-
-// void write_command(const st7735_pin_config_t *pins, uint8_t cmd) {
-//     gpio_put(pins->rs_pin, 0);
-//     gpio_put(pins->cs_pin, 0);
-//     spi_write_blocking(pins->spi_port, &cmd, 1);
-//     gpio_put(pins->cs_pin, 1);
-// }
-
-
-// void write_data(const st7735_pin_config_t *pins, uint8_t data) {
-//     gpio_put(pins->rs_pin, 1);
-//     gpio_put(pins->cs_pin, 0);
-//     spi_write_blocking(pins->spi_port, &data, 1);
-//     gpio_put(pins->cs_pin, 1);
-// }
-
-// void write_data_buffer(const st7735_pin_config_t *pins, const uint8_t *data, size_t len) {
-//     gpio_put(pins->rs_pin, 1);
-//     gpio_put(pins->cs_pin, 0);
-//     spi_write_blocking(pins->spi_port, data, len);
-//     gpio_put(pins->cs_pin, 1);
-// }
-
-// void fill_screen(uint16_t color) {
-//     uint8_t upper = color >> 8;
-//     uint8_t lower = color & 0xFF; 
-//     uint8_t combined[2] = {upper, lower};
-    
-//     write_command(&interface_pins, ST77XX_CASET);
-//     write_data(&interface_pins, 0x00); write_data(&interface_pins, 0x00);   // X start 1 - offsetted
-//     write_data(&interface_pins, 0x00); write_data(&interface_pins, 0x7F);   // X end (160) - offsetted
-
-//     write_command(&interface_pins, ST77XX_RASET);
-//     write_data(&interface_pins, 0x00); write_data(&interface_pins, 0x00);   // Y start 2 - offsetted
-//     write_data(&interface_pins, 0x00); write_data(&interface_pins, 0x9F);   // Y end (129) - offsetted
-
-//     write_command(&interface_pins, ST77XX_RAMWR);
-
-//     for (int i = 0; i < 160 * 128; i++) {
-//         write_data_buffer(&interface_pins, combined, 2);
-//     }
-
-// }
-

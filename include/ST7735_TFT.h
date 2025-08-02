@@ -70,18 +70,46 @@ typedef struct {
 void write_command(uint8_t cmd);
 void write_data(uint8_t data);
 
-//void write_data_buffer(const st7735_pin_config_t *pins, const uint8_t *data, size_t len);
 
-// Functionality
+/*
+    * @brief Initializes the ST7735 Display
+    * 
+*/
 void st7735_init_display();
 
+
+
+/*
+    * @brief Set Area on screen that can be drawn to
+    * @param Coordinates of point 0 and point 1
+    * 
+*/
 void set_AddrArea(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1);
 
+
+/*
+    * @brief Create and fill a rectangle 
+    * @param (x,y) position for top left of rectangle, then how wide and tall it is along w/ color to fill
+    * 
+*/
 void fill_rectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_t color);
 
+
+/*
+    * @brief Fills entire screen with one color
+    * @param Color formatted in two bytes in R-G-B (5-6-5)
+    * 
+*/
 void fill_screen(uint16_t color);
 
 void change_framerate();
+
+/*
+    * @brief Draw a singular pixel
+    * @param (x,y) position for top left of rectangle, then how wide and tall it is along w/ color to fill
+    * 
+*/
+void draw_pixel(uint8_t x, uint8_t y, uint16_t color);
 
 void draw_shape();
 
