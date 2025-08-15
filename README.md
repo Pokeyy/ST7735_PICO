@@ -85,7 +85,7 @@ v
 
 
 
-# Resources:
+# Resources
 ## The repositories below helped me a lot when trying to understand better code practices, what to look for when creating my own driver, and are much better than what I have tried to produce.
 ## https://github.com/bablokb/pico-st7735/tree/main 
 ## https://github.com/adafruit/Adafruit-ST7735-Library
