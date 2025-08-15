@@ -22,10 +22,11 @@ int main()
     sleep_ms(50);
 
     st7735_init_display();
-    fill_screen(ST7735_BLUE);
+    fill_screen(ST7735_WHITE);
 
     sleep_ms(1000);
-    for(int i = 33; i < 77; i++) {
-        draw_pixel(i, 55, ST7735_GREEN);
-    }
+    draw_char(10, 5, 'A', ST7735_BLACK, ST7735_WHITE, 1);
+    draw_char(20, 5, 'A', ST7735_GREEN, ST7735_WHITE, 1);
+    draw_char(30, 5, 'A', ST7735_BLACK, ST7735_WHITE, 2);
+
 }

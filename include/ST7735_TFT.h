@@ -65,6 +65,7 @@ typedef struct {
 } st7735_pin_config_t;
 
 /********************** FUNCTION PROTOTYPES ***************/
+// Some functions taken from: https://github.com/bablokb/pico-st7735/ 
 
 // For SPI:
 void write_command(uint8_t cmd);
@@ -102,6 +103,9 @@ void fill_rectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_
 */
 void fill_screen(uint16_t color);
 
+void draw_char(uint8_t x, uint8_t y, char c, uint16_t color, uint16_t bg, uint8_t size);
+void draw_charX(uint8_t x, uint8_t y, char c, uint16_t color, uint16_t bg, uint8_t size);
+
 void change_framerate();
 
 /*
@@ -111,7 +115,6 @@ void change_framerate();
 */
 void draw_pixel(uint8_t x, uint8_t y, uint16_t color);
 
-void draw_shape();
 
 void draw_line();
 
