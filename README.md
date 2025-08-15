@@ -1,5 +1,80 @@
+## Directory
+### Resources:
+[here](#resources)
+
 # Goal of this Project
 ## The goal of this project was to help me improve at coding in C, and possibly a little C++ by learning how to develop a driver with minimal libraries for the ST7735 TFT LCD Screen
+
+
+
+
+
+
+
+#F
+
+#F
+
+
+
+#F
+
+#F
+
+#F
+
+#F
+
+#F
+
+#F
+
+#F
+
+#F
+#F
+
+#F
+
+#F
+
+#F
+
+#F
+
+v
+#F
+
+
+#F
+
+#F
+
+#F
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Resources:
