@@ -90,28 +90,65 @@ void draw_char(uint8_t x, uint8_t y, char c, uint16_t color, uint16_t bg, uint8_
     if (c < ' ' || c > '~') c = '?';
     if (x >= tft_width || y >= tft_height) return;
 
-    const uint8_t *charData = font6x8[0]; // only 'A' for now
+    // printf("Drawing char '%c' (0x%02X) at index %d\n", c, c, c - ' ');           Debugging
+
+    const uint8_t *charData = font5x7[c - ' ']; // fetch character row data
 
     for (uint8_t col = 0; col < 5; col++) {
-        uint8_t line = charData[c - ' '];
+        uint8_t line = charData[col];
+        // printf("  Col %d: 0x%02X\n", col, line);                                 Debugging
 
         for (uint8_t row = 0; row < 7; row++) {
-            bool pixelOn = line & 0x80; // MSB-top
-            line <<= 1;
+            bool pixelOn = line & 0x01; // LSB-top
+            line >>= 1;
 
             int drawX = x + col * size;  // column → X
             int drawY = y + row * size;  // row → Y
 
+            // Optional row debug:
+            // printf("    Row %d: %d\n", row, pixelOn);
+
             if (pixelOn) {
                 if (size == 1) draw_pixel(drawX, drawY, color);
                 else fill_rectangle(drawX, drawY, size, size, color);
-            } else if (bg != color) {
+            } 
+            else if (bg != color) {
                 if (size == 1) draw_pixel(drawX, drawY, bg);
                 else fill_rectangle(drawX, drawY, size, size, bg);
             }
         }
     }
 }
+
+
+// void draw_char(uint8_t x, uint8_t y, char c, uint16_t color, uint16_t bg, uint8_t size) {
+//     if (size < 1) size = 1;
+
+//     if (c < ' ' || c > '~') c = '?';
+//     if (x >= tft_width || y >= tft_height) return;
+
+//     const uint8_t *charData = font5x7[c - ' '];
+
+//     for (uint8_t col = 0; col < 5; col++) {
+//         uint8_t line = charData[col];
+
+//         for (uint8_t row = 0; row < 7; row++) {
+//             bool pixelOn = line & 0x80; // MSB-top
+//             line <<= 1;
+
+//             int drawX = x + col * size;  // column → X
+//             int drawY = y + row * size;  // row → Y
+
+//             if (pixelOn) {
+//                 if (size == 1) draw_pixel(drawX, drawY, color);
+//                 else fill_rectangle(drawX, drawY, size, size, color);
+//             } else if (bg != color) {
+//                 if (size == 1) draw_pixel(drawX, drawY, bg);
+//                 else fill_rectangle(drawX, drawY, size, size, bg);
+//             }
+//         }
+//     }
+// }
 
 
 
