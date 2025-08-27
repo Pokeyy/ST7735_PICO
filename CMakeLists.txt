@@ -35,7 +35,7 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(ST7735_PICO demo.c src/hardware.c src/ST7735_TFT.c src/test.c)
+add_executable(ST7735_PICO demo.c src/hardware.c src/ST7735_TFT.c demos/RTC/rtc.c) 
 
 pico_set_program_name(ST7735_PICO "ST7735_PICO")
 pico_set_program_version(ST7735_PICO "0.1")
@@ -46,7 +46,9 @@ pico_enable_stdio_usb(ST7735_PICO 1)
 
 # Add the standard library to the build
 target_link_libraries(ST7735_PICO
-        pico_stdlib)
+        pico_stdlib
+        pico_util
+        )
 
 # Add the standard include files to the build
 # target_include_directories(ST7735_PICO PRIVATE

@@ -19,3 +19,5 @@ void draw_ascii_test(uint16_t color, uint16_t bg, uint8_t size) {
         draw_char(x, y, c, color, bg, size);
     }
 }
+
+

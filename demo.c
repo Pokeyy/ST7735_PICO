@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
-#include "hardware/timer.h"
 #include "hardware/gpio.h"
 #include "include/hardware.h"
 #include "include/ST7735_TFT.h"
 #include "include/test.h"
+#include "demos/RTC/rtc.h"
+
 
 #define BUTTON 14
 
@@ -33,7 +34,21 @@ int main()
 
     gpio_init(25);
     gpio_set_dir(25, GPIO_OUT);
-    gpio_put(25, 1);
+
+    st7735_init_display();
+    fill_screen(ST7735_WHITE);
+
+    sleep_ms(1000);
+
+    //aon_timer_read();
+    ao_timer_demo();
+
+    // while (1) {
+    //     tight_loop_contents();          // makes sure timers, interrupts and callbacks are called on time
+    // }
+
+
+}
 
     // gpio_init(BUTTON);
     // gpio_set_dir(BUTTON, GPIO_IN);
@@ -42,24 +57,3 @@ int main()
 
     //repeating_timer_t timer;
     //add_repeating_timer_ms(500, repeating_timer_callback, NULL, &timer);
-
-    sleep_ms(50);
-    gpio_put(SPI_ST7735_RST, 1);
-    sleep_ms(50);
-
-    st7735_init_display();
-    fill_screen(ST7735_WHITE);
-
-    sleep_ms(1000);
-    
-    // draw_char(10, 5, 'A', ST7735_BLACK, ST7735_WHITE, 1);
-    // draw_char(20, 5, 'A', ST7735_GREEN, ST7735_WHITE, 1);
-    // draw_char(30, 5, 'A', ST7735_BLACK, ST7735_WHITE, 2);
-    draw_ascii_test(ST7735_BLACK, ST7735_WHITE, 1);
-
-    while (1) {
-        tight_loop_contents();          // makes sure timers, interrupts and callbacks are called on time
-    }
-
-
-}

@@ -121,40 +121,13 @@ void draw_char(uint8_t x, uint8_t y, char c, uint16_t color, uint16_t bg, uint8_
 }
 
 
-// void draw_char(uint8_t x, uint8_t y, char c, uint16_t color, uint16_t bg, uint8_t size) {
-//     if (size < 1) size = 1;
-
-//     if (c < ' ' || c > '~') c = '?';
-//     if (x >= tft_width || y >= tft_height) return;
-
-//     const uint8_t *charData = font5x7[c - ' '];
-
-//     for (uint8_t col = 0; col < 5; col++) {
-//         uint8_t line = charData[col];
-
-//         for (uint8_t row = 0; row < 7; row++) {
-//             bool pixelOn = line & 0x80; // MSB-top
-//             line <<= 1;
-
-//             int drawX = x + col * size;  // column → X
-//             int drawY = y + row * size;  // row → Y
-
-//             if (pixelOn) {
-//                 if (size == 1) draw_pixel(drawX, drawY, color);
-//                 else fill_rectangle(drawX, drawY, size, size, color);
-//             } else if (bg != color) {
-//                 if (size == 1) draw_pixel(drawX, drawY, bg);
-//                 else fill_rectangle(drawX, drawY, size, size, bg);
-//             }
-//         }
-//     }
-// }
-
-
-
 
 
 void st7735_init_display() {
+    sleep_ms(50);
+    gpio_put(SPI_ST7735_RST, 1);
+    sleep_ms(50);
+
     // Step 1, Reset it 
     write_command(ST77XX_SWRESET);
     sleep_ms(120);
