@@ -28,8 +28,13 @@ void button_callback(uint gpio, uint32_t events) {
 int main()
 {
     stdio_init_all();
-    sleep_ms(500); // small delay
-    while(!stdio_usb_connected()) {}  // waits for USB serial to be connected
+    sleep_ms(50); // small delay
+    while(!stdio_usb_connected()) {
+        tight_loop_contents();
+    }
+    sleep_ms(50);
+    
+    
     st7735_spi_init();
 
     gpio_init(25);
@@ -42,6 +47,8 @@ int main()
     draw_char(3, 3, 'A', ST7735_BLACK, ST7735_WHITE, 1);
     draw_char(10, 3, 'B', ST7735_BLACK, ST7735_WHITE, 1);
     draw_char(17, 3, 'C', ST7735_BLACK, ST7735_WHITE, 1);
+
+    draw_string(3, 10, "Nguyen Method", ST7735_CYAN, ST7735_WHITE, 1);
 
     //aon_timer_read();
     //ao_timer_demo();

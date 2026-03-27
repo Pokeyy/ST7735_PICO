@@ -104,6 +104,9 @@ void fill_rectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_
 void fill_screen(uint16_t color);
 
 
+void draw_string(uint8_t x, uint8_t y, const char* str, uint16_t font_color, uint16_t bg_color, uint8_t size);
+
+
 /*
     * @brief draws a speecified char in a 5x7 ascii font
     * @param (x,y) position for top left of character, the character itself, char color, bg color, and font size

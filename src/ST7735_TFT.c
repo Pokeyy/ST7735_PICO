@@ -92,6 +92,26 @@ void draw_pixel(uint8_t x, uint8_t y, uint16_t color) {
     write_data(color);
 }
 
+void draw_string(uint8_t x, uint8_t y, const char* str, uint16_t font_color, uint16_t bg_color, uint8_t size) {
+    if (size < 1) 
+        size = 1;
+
+    uint8_t x_start = x;
+
+    while(str[0]) { // while loop until the character at the index is not zero / '0'
+        if (str[0] == '\n') {
+            x = x_start;
+            y += 8 * size; // 7 pixels for height + 1 pixel spacing
+        }
+        else {
+            if (x + 5 * size < tft_width && y + 7 * size < tft_height)
+                draw_char(x, y, str[0], font_color, bg_color, size);
+            x += 6 * size; // 5 pixels for height + 1 pixel spacing
+        }
+     str++;   
+    }
+}
+
 void draw_char(uint8_t x, uint8_t y, char c, uint16_t color, uint16_t bg, uint8_t size) {
     if (size < 1) size = 1;
 
