@@ -38,6 +38,14 @@ void write_data(uint8_t data) {
     tft_cs_high();
 }
 
+// add multi-byte data func
+void write_data_buffer(uint8_t* data, size_t len) {
+    tft_rs_high();
+    tft_cs_low();
+    spi_write_blocking(SPI_ST7735_PORT, data, len);
+    tft_cs_high();
+}
+
 
 void set_AddrArea(uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1) {
     write_command(ST77XX_CASET);
@@ -79,7 +87,7 @@ void fill_screen(uint16_t color) {
 void draw_pixel(uint8_t x, uint8_t y, uint16_t color) {
     if((x >= tft_width) || (y >= tft_height)) 
         return;
-    set_AddrArea(x, y, x+1, y+1);
+    set_AddrArea(x, y, x, y);
     write_data(color >> 8);
     write_data(color);
 }
@@ -123,6 +131,7 @@ void draw_char(uint8_t x, uint8_t y, char c, uint16_t color, uint16_t bg, uint8_
 
 
 
+
 void st7735_init_display() {
     sleep_ms(50);
     gpio_put(SPI_ST7735_RST, 1);
@@ -152,5 +161,4 @@ void st7735_init_display() {
     // Turn Display On
     write_command(ST77XX_DISPON);
     sleep_ms(100);
-
 }

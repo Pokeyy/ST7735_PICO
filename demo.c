@@ -39,9 +39,12 @@ int main()
     fill_screen(ST7735_WHITE);
 
     sleep_ms(1000);
+    draw_char(3, 3, 'A', ST7735_BLACK, ST7735_WHITE, 1);
+    draw_char(10, 3, 'B', ST7735_BLACK, ST7735_WHITE, 1);
+    draw_char(17, 3, 'C', ST7735_BLACK, ST7735_WHITE, 1);
 
     //aon_timer_read();
-    ao_timer_demo();
+    //ao_timer_demo();
 
     // while (1) {
     //     tight_loop_contents();          // makes sure timers, interrupts and callbacks are called on time
