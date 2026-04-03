@@ -40,7 +40,9 @@ int main()
     gpio_init(25);
     gpio_set_dir(25, GPIO_OUT);
 
+
     st7735_init_display();
+    set_rotation(ROTATION_90); //
     fill_screen(ST7735_WHITE);
 
     sleep_ms(1000);
@@ -48,18 +50,29 @@ int main()
     draw_char(10, 3, 'B', ST7735_BLACK, ST7735_WHITE, 1);
     draw_char(17, 3, 'C', ST7735_BLACK, ST7735_WHITE, 1);
 
-    draw_string(3, 10, "Nguyen Method", ST7735_CYAN, ST7735_WHITE, 1);
+    draw_string(3, 10, "Nguyen Method", ST7735_BLUE, ST7735_WHITE, 2);
 
-    //aon_timer_read();
-    //ao_timer_demo();
+    set_rotation(ROTATION_270);
+    sleep_ms(1000);
+    draw_char(3, 3, 'A', ST7735_BLACK, ST7735_WHITE, 1);
+    draw_char(10, 3, 'B', ST7735_BLACK, ST7735_WHITE, 1);
+    draw_char(17, 3, 'C', ST7735_BLACK, ST7735_WHITE, 1);
 
-    // while (1) {
-    //     tight_loop_contents();          // makes sure timers, interrupts and callbacks are called on time
-    // }
+    draw_string(3, 10, "Nguyen Method", ST7735_BLUE, ST7735_WHITE, 2);
+
+    while (true) {
+
+    // Or just keep it tight loop if you don't want LED blinking:
+    tight_loop_contents();
+    }
+
+
 
 
 }
 
+        //aon_timer_read();
+    //ao_timer_demo();
     // gpio_init(BUTTON);
     // gpio_set_dir(BUTTON, GPIO_IN);
     // gpio_pull_up(BUTTON);

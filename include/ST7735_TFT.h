@@ -55,6 +55,12 @@
 #define ST7735_CYAN                 0x07FF
 #define ST7735_MAGENTA              0xF81F
 
+// Screen Rotation Definitions
+#define ROTATION_0                  0x00
+#define ROTATION_90                 0x60
+#define ROTATION_180                0xC0
+#define ROTATION_270                0xA0
+
 extern uint8_t disp_width, disp_height;
 
 typedef struct {
@@ -78,6 +84,12 @@ void write_data(uint8_t data);
 */
 void st7735_init_display();
 
+
+/*
+    * @brief Sets rotation of the screen by checking MV bit for axis
+    * @param value for madctl data
+*/
+void set_rotation(uint8_t madctl);
 
 
 /*
@@ -112,6 +124,8 @@ void draw_string(uint8_t x, uint8_t y, const char* str, uint16_t font_color, uin
     * @param (x,y) position for top left of character, the character itself, char color, bg color, and font size
 */
 void draw_char(uint8_t x, uint8_t y, char c, uint16_t color, uint16_t bg, uint8_t size);
+
+// int draw_char(uint8_t x, uint8_t y, char c, uint16_t color, uint16_t bg, uint8_t size);
 
 void change_framerate();
 

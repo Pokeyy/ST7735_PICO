@@ -14,7 +14,7 @@
 
 uint8_t col_start = 0, row_start = 0, x_start = 0, y_start = 0;
 
-uint8_t tft_width = 128, tft_height = 160;
+uint8_t tft_width, tft_height;
 
 st7735_pin_config_t interface_pins = {
     .cs_pin = SPI_ST7735_CS,
@@ -148,8 +148,18 @@ void draw_char(uint8_t x, uint8_t y, char c, uint16_t color, uint16_t bg, uint8_
     }
 }
 
+void set_rotation(uint8_t madctl) {
+    write_command(ST77XX_MADCTL);
+    write_data(madctl);
 
+    if (madctl & 0x20) {        
+        tft_width = 160, tft_height = 128;
+    }
+    else {
+        tft_width = 128, tft_height = 160;
+    }
 
+}
 
 
 void st7735_init_display() {
@@ -169,10 +179,11 @@ void st7735_init_display() {
     write_command(ST77XX_COLMOD);
     write_data(0x05);                 // 16-bit
 
-    // MADCTL (define reading or writing each frame scan)
-    write_command(ST77XX_MADCTL);
-    write_data(0xC0);                   // bits 0-4 just keep 0 for default, bits 5-7 indicate inversion, like if your first pixel starts opposite side
-                                                         // (MX, MY, MV = 0) (was 0x00 before but adafruit uses 0xC0)
+    // // MADCTL (define reading or writing each frame scan)
+    // write_command(ST77XX_MADCTL);
+    // // write_data(0xC0);                   // bits 0-4 just keep 0 for default, bits 5-7 indicate inversion, like if your first pixel starts opposite side
+    //                                                      // (MX, MY, MV = 0) (was 0x00 before but adafruit uses 0xC0)
+    // write_data(0xC0);
 
     // Normal Display Mode ON
     write_command(ST77XX_NORON);
