@@ -92,6 +92,38 @@ void draw_pixel(uint8_t x, uint8_t y, uint16_t color) {
     write_data(color);
 }
 
+void draw_bitmap(uint8_t x, uint8_t y, uint8_t icon, uint16_t font_color, uint16_t bg_color, uint8_t size) {
+    if (size < 1) size = 1;
+    if (x >= tft_width || y >= tft_height) return;
+
+    const uint8_t *iconData = icons_weather[icon];
+    
+    for (uint8_t col = 0; col < 8; col++) {
+        uint8_t line = iconData[col];
+        for(uint8_t row = 0; row < 8; row++) {
+            bool pixelOn = line & 0x01; // LSB-top
+            line >>= 1;
+
+            // rotate 90° clockwise
+            int drawX = x + (7 - row) * size;
+            int drawY = y + col * size;
+
+            // Optional row debug:
+            // printf("    Row %d: %d\n", row, pixelOn);
+
+            if (pixelOn) {
+                if (size == 1) draw_pixel(drawX, drawY, font_color);
+                else fill_rectangle(drawX, drawY, size, size, font_color);
+            } 
+            else if (bg_color != font_color) {
+                if (size == 1) draw_pixel(drawX, drawY, bg_color);
+                else fill_rectangle(drawX, drawY, size, size, bg_color);
+            }
+        }
+    }
+
+}
+
 void draw_string(uint8_t x, uint8_t y, const char* str, uint16_t font_color, uint16_t bg_color, uint8_t size) {
     if (size < 1) 
         size = 1;

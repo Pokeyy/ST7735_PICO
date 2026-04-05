@@ -37,7 +37,14 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(ST7735_PICO demo.c src/hardware.c src/ST7735_TFT.c demos/RTC/rtc.c) 
+add_executable(ST7735_PICO 
+    demo.c 
+    src/hardware.c 
+    src/ST7735_TFT.c 
+    src/ST7735_Screens.c 
+    src/fonts.c 
+    demos/RTC/rtc.c
+) 
 
 #target_compile_definitions(ST7735_PICO PRIVATE PICO_ENTER_USB_BOOT_ON_EXIT=1)
 
@@ -55,10 +62,6 @@ target_link_libraries(ST7735_PICO
         )
 
 
-# Add the standard include files to the build
-# target_include_directories(ST7735_PICO PRIVATE
-#         ${CMAKE_CURRENT_LIST_DIR}
-# )
 
 # Add any user requested libraries
 target_link_libraries(ST7735_PICO 
@@ -68,12 +71,6 @@ target_link_libraries(ST7735_PICO
 
 pico_add_extra_outputs(ST7735_PICO)
 
-# add_custom_command(
-#     TARGET ST7735_PICO POST_BUILD
-#     COMMAND picotool reboot -f -u
-#     COMMAND ${CMAKE_COMMAND} -E sleep 2
-#     COMMAND picotool load ST7735_PICO.uf2 -x
-# )
 
 target_include_directories(ST7735_PICO PRIVATE include)
 target_include_directories(ST7735_PICO PRIVATE src)

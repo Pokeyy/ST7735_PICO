@@ -1,4 +1,8 @@
 
+#include <stdint.h>
+#include "pico/stdlib.h"
+#include "hardware/spi.h"
+
 // To Do List:
 // Adapt for all screen tab types
 // and insert adafruit commands for each one ig
@@ -54,12 +58,20 @@
 #define ST7735_YELLOW               0xFFE0
 #define ST7735_CYAN                 0x07FF
 #define ST7735_MAGENTA              0xF81F
+#define ST7735_GRAY_LIGHT           0xC618  // ~192/255 brightness
+#define ST7735_GRAY_MEDIUM          0x8410  // ~128/255 brightness
+#define ST7735_GRAY_DARK            0x4208  // ~64/255 brightness
 
 // Screen Rotation Definitions
 #define ROTATION_0                  0x00
 #define ROTATION_90                 0x60
 #define ROTATION_180                0xC0
 #define ROTATION_270                0xA0
+
+// Icon Definitions
+#define ICON_WEATHER_SUN            0x00
+#define ICON_WEATHER_CLOUD          0x01
+#define ICON_WEATHER_RAIN           0x02
 
 extern uint8_t disp_width, disp_height;
 
@@ -115,12 +127,18 @@ void fill_rectangle(uint8_t x, uint8_t y, uint8_t width, uint8_t height, uint16_
 */
 void fill_screen(uint16_t color);
 
-
+/*
+    * @brief draws a specified string in a 5x7 ascii font
+    * @param (x,y) position for top left of character, the character itself, char color, bg color, and font size
+*/
 void draw_string(uint8_t x, uint8_t y, const char* str, uint16_t font_color, uint16_t bg_color, uint8_t size);
 
 
+void draw_bitmap(uint8_t x, uint8_t y, uint8_t icon, uint16_t font_color, uint16_t bg_color, uint8_t size);
+
+
 /*
-    * @brief draws a speecified char in a 5x7 ascii font
+    * @brief draws a specified char in a 5x7 ascii font
     * @param (x,y) position for top left of character, the character itself, char color, bg color, and font size
 */
 void draw_char(uint8_t x, uint8_t y, char c, uint16_t color, uint16_t bg, uint8_t size);

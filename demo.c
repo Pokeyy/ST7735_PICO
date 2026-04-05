@@ -4,8 +4,9 @@
 #include "hardware/gpio.h"
 #include "include/hardware.h"
 #include "include/ST7735_TFT.h"
-#include "include/test.h"
+#include "include/ST7735_Screens.h"
 #include "demos/RTC/rtc.h"
+#include "ST7735_Screens.h"
 
 
 #define BUTTON 14
@@ -45,20 +46,35 @@ int main()
     set_rotation(ROTATION_90); //
     fill_screen(ST7735_WHITE);
 
-    sleep_ms(1000);
-    draw_char(3, 3, 'A', ST7735_BLACK, ST7735_WHITE, 1);
-    draw_char(10, 3, 'B', ST7735_BLACK, ST7735_WHITE, 1);
-    draw_char(17, 3, 'C', ST7735_BLACK, ST7735_WHITE, 1);
+    sleep_ms(1500);
+    draw_weather_screen();
 
-    draw_string(3, 10, "Nguyen Method", ST7735_BLUE, ST7735_WHITE, 2);
+    // //sleep_ms(1000);
+    // draw_char(3, 3, 'A', ST7735_BLACK, ST7735_WHITE, 1);
+    // draw_char(10, 3, 'B', ST7735_BLACK, ST7735_WHITE, 1);
+    // draw_char(17, 3, 'C', ST7735_BLACK, ST7735_WHITE, 1);
 
-    set_rotation(ROTATION_270);
-    sleep_ms(1000);
-    draw_char(3, 3, 'A', ST7735_BLACK, ST7735_WHITE, 1);
-    draw_char(10, 3, 'B', ST7735_BLACK, ST7735_WHITE, 1);
-    draw_char(17, 3, 'C', ST7735_BLACK, ST7735_WHITE, 1);
+    // draw_string(3, 10, "Nguyen Method", ST7735_BLUE, ST7735_WHITE, 2);
 
-    draw_string(3, 10, "Nguyen Method", ST7735_BLUE, ST7735_WHITE, 2);
+    // set_rotation(ROTATION_270);
+    // //sleep_ms(1000);
+    // draw_char(3, 3, 'A', ST7735_BLACK, ST7735_WHITE, 1);
+    // draw_char(10, 3, 'B', ST7735_BLACK, ST7735_WHITE, 1);
+    // draw_char(17, 3, 'C', ST7735_BLACK, ST7735_WHITE, 1);
+
+    // draw_string(3, 10, "Nguyen Method", ST7735_BLUE, ST7735_WHITE, 2);
+    // sleep_ms(2500);
+    // fill_screen(ST7735_WHITE);
+
+    // sleep_ms(2000);
+
+    // draw_bitmap(75, 55, ICON_WEATHER_SUN, ST7735_YELLOW, ST7735_WHITE, 3);
+
+    // sleep_ms(2000);
+    // draw_bitmap(35, 80, ICON_WEATHER_CLOUD, ST7735_GRAY_LIGHT, ST7735_WHITE, 3);
+    // draw_bitmap(60, 80, ICON_WEATHER_CLOUD, ST7735_GRAY_MEDIUM, ST7735_WHITE, 3);
+    // draw_bitmap(85, 80, ICON_WEATHER_CLOUD, ST7735_GRAY_DARK, ST7735_WHITE, 3);
+    // draw_bitmap(110, 80, ICON_WEATHER_CLOUD, ST7735_BLACK, ST7735_WHITE, 3);
 
     while (true) {
 
