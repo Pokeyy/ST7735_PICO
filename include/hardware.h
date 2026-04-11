@@ -43,6 +43,10 @@
     #define SPI_ST7735_SCK                  2
 #endif
 
+#ifndef ST7735_SW_SCREENS
+    #define ST7735_SW_SCREENS               14
+#endif
+
 static inline void tft_cs_low() {                       // Timing found at Pg25 (unsure about exact # of NOP uses)
     asm volatile("nop \n nop \n nop"); \
     gpio_put(SPI_ST7735_CS, 0);

@@ -7,3 +7,5 @@ build*/
 CMakeFiles/
 CMakeCache.txt
 cmake
+
+wifi_config.cmake

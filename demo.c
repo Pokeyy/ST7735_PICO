@@ -7,6 +7,8 @@
 #include "include/ST7735_Screens.h"
 #include "demos/RTC/rtc.h"
 #include "ST7735_Screens.h"
+#include "weather.h"
+#include "pico/cyw43_arch.h"
 
 
 #define BUTTON 14
@@ -26,7 +28,56 @@ void button_callback(uint gpio, uint32_t events) {
     gpio_put(25, led_value);
 }
 
-int main()
+int main() {
+    stdio_init_all();
+    sleep_ms(3000);
+    printf("Starting WTTR.in Pico W client...\n");
+
+    if (cyw43_arch_init()) {
+        printf("Failed to initialise CYW43\n");
+        return 1;
+    }
+
+    cyw43_arch_enable_sta_mode();
+
+    // Connect to Wi-Fi
+    while (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
+        printf("Wi-Fi connect failed, retrying in 5s...\n");
+        sleep_ms(WIFI_RETRY_DELAY_MS);
+    }
+    printf("Wi-Fi connected!\n");
+
+    // Give lwIP time to initialize DNS
+    sleep_ms(2000);
+
+    while (true) {
+        int attempt = 0;
+        int result = 4; // Start assuming DNS failure
+        while (result == 4 && attempt < 5) {
+            printf("Fetching weather, attempt %d...\n", attempt+1);
+            result = fetch_weather();
+            if (result == 4) {
+                printf("DNS failed, retrying in 5s...\n");
+                sleep_ms(WIFI_RETRY_DELAY_MS);
+                attempt++;
+            }
+        }
+
+        if (result != 0) {
+            printf("Request failed with code %d\n", result);
+        } else {
+            printf("Request successful!\n");
+        }
+
+        printf("Sleeping for 30 minutes...\n\n");
+        sleep_ms(FETCH_INTERVAL_MS);
+    }
+
+    cyw43_arch_deinit();
+    return 0;
+}
+
+int main1()
 {
     stdio_init_all();
     sleep_ms(50); // small delay

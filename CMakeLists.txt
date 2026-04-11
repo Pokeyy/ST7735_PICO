@@ -23,7 +23,7 @@ if (EXISTS ${picoVscode})
     include(${picoVscode})
 endif()
 # ====================================================================================
-set(PICO_BOARD pico2 CACHE STRING "Board type")
+set(PICO_BOARD pico2_w CACHE STRING "Board type")
 
 
 
@@ -35,6 +35,17 @@ project(ST7735_PICO C CXX ASM)
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
+# Include Wi-Fi credentials
+include(wifi_config.cmake OPTIONAL)
+
+if (NOT DEFINED WIFI_SSID)
+    set(WIFI_SSID "")
+endif()
+
+if (NOT DEFINED WIFI_PASSWORD)
+    set(WIFI_PASSEORD "")
+endif()
+
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(ST7735_PICO 
@@ -44,6 +55,9 @@ add_executable(ST7735_PICO
     src/ST7735_Screens.c 
     src/fonts.c 
     demos/RTC/rtc.c
+    src/weather.c
+    src/http_client_util.c
+
 ) 
 
 #target_compile_definitions(ST7735_PICO PRIVATE PICO_ENTER_USB_BOOT_ON_EXIT=1)
@@ -55,19 +69,24 @@ pico_set_program_version(ST7735_PICO "0.1")
 pico_enable_stdio_uart(ST7735_PICO 1)
 pico_enable_stdio_usb(ST7735_PICO 1)
 
+
+target_compile_definitions(ST7735_PICO PRIVATE
+        WIFI_SSID=\"${WIFI_SSID}\"
+        WIFI_PASSWORD=\"${WIFI_PASSWORD}\"
+        )
+
+
 # Add the standard library to the build
 target_link_libraries(ST7735_PICO
         pico_stdlib
         pico_util
-        )
-
-
-
-# Add any user requested libraries
-target_link_libraries(ST7735_PICO 
-        pico_stdlib
         hardware_spi
+        pico_cyw43_arch_lwip_threadsafe_background
+        pico_lwip_http
+        pico_lwip_mbedtls
+        pico_mbedtls
         )
+
 
 pico_add_extra_outputs(ST7735_PICO)
 
@@ -75,3 +94,10 @@ pico_add_extra_outputs(ST7735_PICO)
 target_include_directories(ST7735_PICO PRIVATE include)
 target_include_directories(ST7735_PICO PRIVATE src)
 
+
+# Ignore warnings from lwip code
+set_source_files_properties(
+        ${PICO_LWIP_PATH}/src/apps/altcp_tls/altcp_tls_mbedtls.c
+        PROPERTIES
+        COMPILE_OPTIONS "-Wno-unused-result"
+        )
