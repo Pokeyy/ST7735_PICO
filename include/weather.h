@@ -11,6 +11,6 @@
 #define WIFI_RETRY_DELAY_MS                 5000
 #define FETCH_INTERVAL_MS                   1800000
 
-int fetch_weather();
+int fetch_weather(int *temp_out);
 err_t my_recv_fn(void *arg, struct altcp_pcb *conn, struct pbuf *p, err_t err);
 #endif

@@ -9,7 +9,7 @@
 static char buffer_weather[2048];
 static int buffer_index = 0;
 
-int fetch_weather()
+int fetch_weather(int *temp_out)
 {
     buffer_index = 0;
 
@@ -33,9 +33,9 @@ int fetch_weather()
         {
             pos++;
             while (*pos == ' ' || *pos == '\"') pos++;      // skip spaces and quotes 
-            int temp = atoi(pos);
+            *temp_out = atoi(pos);
 
-            printf("%dF\n", temp);
+            printf("%dF\n", *temp_out);
         }
     }
 

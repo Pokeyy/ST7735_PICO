@@ -28,8 +28,9 @@ void button_callback(uint gpio, uint32_t events) {
     gpio_put(25, led_value);
 }
 
-int main() {
-    stdio_init_all();
+int the_weather() {
+    int temp;
+    char temp_str[16];
     sleep_ms(3000);
     printf("Starting WTTR.in Pico W client...\n");
 
@@ -55,7 +56,11 @@ int main() {
         int result = 4; // Start assuming DNS failure
         while (result == 4 && attempt < 5) {
             printf("Fetching weather, attempt %d...\n", attempt+1);
-            result = fetch_weather();
+            result = fetch_weather(&temp);
+            // if (temp != -1) {
+                snprintf(temp_str, sizeof(temp_str), "%dF", temp);
+                draw_string(10, 20, temp_str, ST7735_BLACK, ST7735_WHITE, 2);
+            // }
             if (result == 4) {
                 printf("DNS failed, retrying in 5s...\n");
                 sleep_ms(WIFI_RETRY_DELAY_MS);
@@ -75,6 +80,30 @@ int main() {
 
     cyw43_arch_deinit();
     return 0;
+}
+
+int main() {
+    stdio_init_all();
+    sleep_ms(50); // small delay
+    while(!stdio_usb_connected()) {
+        tight_loop_contents();
+    }
+    sleep_ms(50);
+    
+    
+    st7735_spi_init();
+
+    gpio_init(25);
+    gpio_set_dir(25, GPIO_OUT);
+
+
+    st7735_init_display();
+    set_rotation(ROTATION_90); //
+    fill_screen(ST7735_WHITE);
+
+    sleep_ms(1500);
+
+    the_weather();
 }
 
 int main1()
