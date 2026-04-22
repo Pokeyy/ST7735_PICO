@@ -10,7 +10,6 @@
 #include "weather.h"
 #include "pico/cyw43_arch.h"
 
-
 #define BUTTON 14
 
 int led_value = 0;
@@ -28,14 +27,16 @@ void button_callback(uint gpio, uint32_t events) {
     gpio_put(25, led_value);
 }
 
-int the_weather() {
-    int temp = -999;
+int the_weather()
+{
+    int temps_max[3], temps_min[3];
     char temp_str[16];
 
     sleep_ms(3000);
     printf("Starting WTTR.in Pico W client...\n");
 
-    if (cyw43_arch_init()) {
+    if (cyw43_arch_init())
+    {
         printf("Failed to initialise CYW43\n");
         return 1;
     }
@@ -48,8 +49,8 @@ int the_weather() {
         CYW43_AUTH_WPA2_AES_PSK,
         30000))
     {
-        printf("Wi-Fi connect failed, retrying in 5s...\n");
-        sleep_ms(WIFI_RETRY_DELAY_MS);
+        printf("Wi-Fi connect failed, retrying...\n");
+        sleep_ms(5000);
     }
 
     printf("Wi-Fi connected!\n");
@@ -61,36 +62,34 @@ int the_weather() {
         int attempt = 0;
         int result = -1;
 
-        temp = -999;  // 🔥 RESET every cycle
-
         while (attempt < 5)
         {
-            printf("Fetching weather, attempt %d...\n", attempt + 1);
+            printf("Fetching weather attempt %d...\n", attempt + 1);
 
-            result = fetch_weather(&temp);
+            result = fetch_weather(temps_max, temps_min);
 
             if (result == 0)
                 break;
 
-            printf("Fetch failed (%d), retrying...\n", result);
-
-            sleep_ms(WIFI_RETRY_DELAY_MS);
+            sleep_ms(2000);
             attempt++;
         }
 
-        // 🔥 ONLY DRAW IF VALID
-        if (result == 0 && temp != -999)
+        if (result == 0)
         {
-            snprintf(temp_str, sizeof(temp_str), "%dF", temp);
-            draw_string(10, 20, temp_str, ST7735_BLACK, ST7735_WHITE, 2);
-            printf("Displayed temp: %dF\n", temp);
+            for (int i = 0; i < 3; i++)
+            {
+                char line[24];
+                snprintf(line, sizeof(line), "D%d %dF/%dF", i+1, temps_max[i], temps_min[i]);
+                draw_string(5, 20 + (i * 20), line, ST7735_BLACK, ST7735_WHITE, 1);
+            }
         }
         else
         {
-            printf("No valid weather data, skipping display\n");
+            printf("No valid weather data\n");
         }
 
-        printf("Sleeping for 30 minutes...\n\n");
+        printf("Sleeping...\n\n");
         sleep_ms(FETCH_INTERVAL_MS);
     }
 
@@ -98,60 +97,6 @@ int the_weather() {
     return 0;
 }
 
-// int the_weather() {
-//     int temp;
-//     char temp_str[16];
-//     sleep_ms(3000);
-//     printf("Starting WTTR.in Pico W client...\n");
-
-//     if (cyw43_arch_init()) {
-//         printf("Failed to initialise CYW43\n");
-//         return 1;
-//     }
-
-//     cyw43_arch_enable_sta_mode();
-
-//     // Connect to Wi-Fi
-//     while (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD, CYW43_AUTH_WPA2_AES_PSK, 30000)) {
-//         printf("Wi-Fi connect failed, retrying in 5s...\n");
-//         sleep_ms(WIFI_RETRY_DELAY_MS);
-//     }
-//     printf("Wi-Fi connected!\n");
-
-//     // Give lwIP time to initialize DNS
-//     sleep_ms(2000);
-
-//     while (true) {
-//         int attempt = 0;
-//         int result = 4; // Start assuming DNS failure
-//         while (result == 4 && attempt < 5) {
-//             printf("Fetching weather, attempt %d...\n", attempt+1);
-//             result = fetch_weather(&temp);
-            
-//             // if (temp != -1) {
-//                 snprintf(temp_str, sizeof(temp_str), "%dF", temp);
-//                 draw_string(10, 20, temp_str, ST7735_BLACK, ST7735_WHITE, 2);
-//             // }
-//             if (result == 4) {
-//                 printf("DNS failed, retrying in 5s...\n");
-//                 sleep_ms(WIFI_RETRY_DELAY_MS);
-//                 attempt++;
-//             }
-//         }
-
-//         if (result != 0) {
-//             printf("Request failed with code %d\n", result);
-//         } else {
-//             printf("Request successful!\n");
-//         }
-
-//         printf("Sleeping for 30 minutes...\n\n");
-//         sleep_ms(FETCH_INTERVAL_MS);
-//     }
-
-//     cyw43_arch_deinit();
-//     return 0;
-// }
 
 int main() {
     stdio_init_all();

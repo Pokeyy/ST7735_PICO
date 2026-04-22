@@ -6,11 +6,14 @@
 #include "lwip/pbuf.h"
 #include "lwip/altcp.h"
 
-#define HOST                                "wttr.in"
-#define URL_REQUEST                         "/Camarillo?format=j1"
+#define HOST "api.open-meteo.com"
+#define URL_REQUEST "/v1/forecast?latitude=34.22&longitude=-119.04" \
+                    "&daily=temperature_2m_max,temperature_2m_min"  \
+                    "&temperature_unit=fahrenheit&forecast_days=3"  \
+                    "&timezone=America%2FLos_Angeles"
 #define WIFI_RETRY_DELAY_MS                 5000
 #define FETCH_INTERVAL_MS                   1800000
 
-int fetch_weather(int *temp_out);
+int fetch_weather(int temps_max[3], int temps_min[3]);
 err_t my_recv_fn(void *arg, struct altcp_pcb *conn, struct pbuf *p, err_t err);
 #endif

@@ -57,7 +57,7 @@ add_executable(ST7735_PICO
     demos/RTC/rtc.c
     src/weather.c
     src/http_client_util.c
-
+    src/cJSON.c
 ) 
 
 #target_compile_definitions(ST7735_PICO PRIVATE PICO_ENTER_USB_BOOT_ON_EXIT=1)

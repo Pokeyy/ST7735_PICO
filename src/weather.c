@@ -5,96 +5,103 @@
 #include "lwipopts.h"
 #include "http_client_util.h"
 #include "weather.h"
+#include "cJSON.h"
 
 static char buffer_weather[2048];
 static int buffer_index = 0;
 
-int fetch_weather(int *temp_out)
+int fetch_weather(int temps_max[3], int temps_min[3])
 {
     buffer_index = 0;
+    memset(buffer_weather, 0, sizeof(buffer_weather));
 
     EXAMPLE_HTTP_REQUEST_T req = {0};
-    req.hostname   = HOST;
-    req.url        = URL_REQUEST;
+    req.hostname = HOST;
+    req.url      = URL_REQUEST;
     req.headers_fn = NULL;
-    req.recv_fn    = my_recv_fn;
+    req.recv_fn  = my_recv_fn;
 
     int result = http_client_request_sync(cyw43_arch_async_context(), &req);
 
-    buffer_weather[buffer_index] = '\0';
+    buffer_weather[buffer_index < sizeof(buffer_weather)
+                   ? buffer_index
+                   : sizeof(buffer_weather) - 1] = '\0';
 
-    printf("\n===== RAW BUFFER =====\n%s\n======================\n", buffer_weather);
-    printf("BUFFER SIZE: %d\n", buffer_index);
-    printf("HTTP RESULT: %d\n", result);
+    printf("FINAL BUFFER SIZE: %d\n", buffer_index);
 
-    // 🔥 ONLY FAIL IF NO DATA
-    if (buffer_index == 0)
+    // Find the JSON object (skip any HTTP framing just in case)
+    char *json_start = strchr(buffer_weather, '{');
+    if (!json_start)
     {
-        printf("ERROR: no data\n");
+        printf("No JSON found\n");
+        printf("RAW: %.120s\n", buffer_weather);
         return -1;
     }
 
-    char *pos = strstr(buffer_weather, "\"weather\"");
-    if (!pos)
+    cJSON *root = cJSON_Parse(json_start);
+    if (!root)
     {
-        printf("ERROR: weather array not found\n");
+        printf("JSON parse failed\n");
+        printf("RAW: %.120s\n", json_start);
         return -1;
     }
 
-    pos = strchr(pos, '[');  // enter weather array
-    if (!pos)
+    // Navigate: root -> "daily" -> "temperature_2m_max" / "temperature_2m_min"
+    cJSON *daily = cJSON_GetObjectItem(root, "daily");
+    if (!cJSON_IsObject(daily))
     {
-        printf("ERROR: bad JSON structure\n");
+        printf("'daily' object missing\n");
+        cJSON_Delete(root);
         return -1;
     }
 
-    int day = 0;
+    cJSON *maxArr = cJSON_GetObjectItem(daily, "temperature_2m_max");
+    cJSON *minArr = cJSON_GetObjectItem(daily, "temperature_2m_min");
 
-    while (day < 3)
+    if (!cJSON_IsArray(maxArr) || !cJSON_IsArray(minArr))
     {
-        char *found = strstr(pos, "\"avgtempF\"");
-        if (!found)
-        {
-            printf("DEBUG: missing avgtempF at day %d\n", day);
-            break;
-        }
-
-        char *colon = strchr(found, ':');
-        if (!colon)
-            break;
-
-        colon++;
-
-        while (*colon == ' ' || *colon == '\"')
-            colon++;
-
-        temp_out[day] = atoi(colon);
-
-        printf("Day %d AVG Temp = %dF\n", day, temp_out[day]);
-
-        day++;
-
-        // 🔥 CRITICAL FIX: move forward properly
-        pos = found + strlen("\"avgtempF\"");
+        printf("temperature arrays missing\n");
+        cJSON_Delete(root);
+        return -1;
     }
 
-    buffer_index = 0;
-    return 0;
+    for (int i = 0; i < 3; i++)
+    {
+        cJSON *maxItem = cJSON_GetArrayItem(maxArr, i);
+        cJSON *minItem = cJSON_GetArrayItem(minArr, i);
+
+        // Open-Meteo returns numbers, not strings
+        temps_max[i] = cJSON_IsNumber(maxItem) ? (int)maxItem->valuedouble : -1;
+        temps_min[i] = cJSON_IsNumber(minItem) ? (int)minItem->valuedouble : -1;
+
+        printf("Day %d: High %dF / Low %dF\n", i, temps_max[i], temps_min[i]);
+    }
+
+    cJSON_Delete(root);
+    return 0;  // don't use `result` from http call — it may be non-zero on clean close
 }
 
 err_t my_recv_fn(void *arg, struct altcp_pcb *conn, struct pbuf *p, err_t err)
 {
     if (!p) return ERR_OK;
 
-    int len = p->tot_len;
+    int remaining = sizeof(buffer_weather) - buffer_index - 1;
 
-    if (buffer_index + len >= sizeof(buffer_weather))
-        len = sizeof(buffer_weather) - buffer_index - 1;
+    if (remaining <= 0)
+    {
+        printf("BUFFER FULL - DROPPING PACKET\n");
+        pbuf_free(p);
+        return ERR_OK;
+    }
+
+    int len = p->tot_len;
+    if (len > remaining)
+        len = remaining;
 
     pbuf_copy_partial(p,
-                       buffer_weather + buffer_index,
-                       len,
-                       0);
+                      buffer_weather + buffer_index,
+                      len,
+                      0);
 
     buffer_index += len;
 
@@ -105,55 +112,3 @@ err_t my_recv_fn(void *arg, struct altcp_pcb *conn, struct pbuf *p, err_t err)
     return ERR_OK;
 }
 
-// err_t my_recv_fn(void *arg, struct altcp_pcb *conn, struct pbuf *p, err_t err) // p = packed of received network data (P == NULL: no more data, connection is closing | P != NULL: here is some data)
-// {
-//     if (!p) return ERR_OK;      // no packet data, exit here and everything is good
-
-//     char *data = (char *)p->payload; // cast char to void* to treat its memory as bytes 
-
-//     int len = p->len;  
-
-//     if (buffer_index + len >= sizeof(buffer_weather))
-//         len = sizeof(buffer_weather) - buffer_index - 1;
-
-//     memcpy(buffer_weather + buffer_index, data, len); // start copying at buffer_weather[buffer_index]
-//     buffer_index += len; // just copied len bytes, move forward in the buffer for next copy
-
-//     pbuf_free(p);
-//     return ERR_OK;
-// }
-
-// int fetch_weather_old(int *temp_out)
-// {
-//     buffer_index = 0;
-
-//     EXAMPLE_HTTP_REQUEST_T req = {0};       // object for http request
-//     req.hostname = HOST;                    // which server to connect to
-//     req.url = URL_REQUEST;                  // what page to connect to from the server
-//     req.headers_fn = NULL;                  // what to do when http headers (meta data) arrive (nothing/ignore bc spam)
-//     req.recv_fn = my_recv_fn;               // call this function whenever data arrives (lwIP will do this for each chunk of data)
-
-//     int result = http_client_request_sync(cyw43_arch_async_context(), &req);        // DNS, then tcp connect to server, send http req (GET) to the URL, then receive data
-//                                                                                     // async co ntext is allowing code to run, networking runs in background, then callbacks get triggered auto
-//                                                                                     // runtime environment for networking
-
-//     buffer_weather[buffer_index] = '\0';        // insert null terminator right after data received via my_recv_fn
-
-//     char *pos = strstr(buffer_weather, "\"temp_F\"");
-//     if (pos)    // did we find first occurence of " "temp_F" "
-//     {
-//         pos = strchr(pos, ':');     // then find first occurence of ':'
-//         if (pos)                    // did we find first occurence of :
-//         {
-//             pos++;
-//             while (*pos == ' ' || *pos == '\"') pos++;      // skip spaces and quotes 
-//             *temp_out = atoi(pos);
-
-//             printf("%dF\n", *temp_out);
-//         }
-//     }
-
-//     buffer_index = 0;
-
-//     return result;
-// }
