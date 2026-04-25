@@ -14,6 +14,14 @@
 #define WIFI_RETRY_DELAY_MS                 5000
 #define FETCH_INTERVAL_MS                   1800000
 
-int fetch_weather(int temps_max[3], int temps_min[3]);
+typedef enum {
+    WEATHER_OK              =  0,
+    WEATHER_ERR_HTTP        = -1,
+    WEATHER_ERR_NO_JSON     = -2,
+    WEATHER_ERR_PARSE       = -3,
+    WEATHER_ERR_MISSING     = -4,
+} weather_err_t;
+
+weather_err_t fetch_weather(int temps_max[3], int temps_min[3]);
 err_t my_recv_fn(void *arg, struct altcp_pcb *conn, struct pbuf *p, err_t err);
 #endif

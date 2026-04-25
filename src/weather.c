@@ -10,7 +10,7 @@
 static char buffer_weather[2048];
 static int buffer_index = 0;
 
-int fetch_weather(int temps_max[3], int temps_min[3])
+weather_err_t fetch_weather(int temps_max[3], int temps_min[3])
 {
     buffer_index = 0;
     memset(buffer_weather, 0, sizeof(buffer_weather));
@@ -21,7 +21,9 @@ int fetch_weather(int temps_max[3], int temps_min[3])
     req.headers_fn = NULL;
     req.recv_fn  = my_recv_fn;
 
-    int result = http_client_request_sync(cyw43_arch_async_context(), &req);
+    int http_result = http_client_request_sync(cyw43_arch_async_context(), &req);
+    if (http_result != 0)
+        printf("HTTP returned non-zero: %d\n", http_result);
 
     buffer_weather[buffer_index < sizeof(buffer_weather)
                    ? buffer_index
@@ -35,7 +37,7 @@ int fetch_weather(int temps_max[3], int temps_min[3])
     {
         printf("No JSON found\n");
         printf("RAW: %.120s\n", buffer_weather);
-        return -1;
+        return WEATHER_ERR_NO_JSON;
     }
 
     cJSON *root = cJSON_Parse(json_start);
@@ -43,7 +45,7 @@ int fetch_weather(int temps_max[3], int temps_min[3])
     {
         printf("JSON parse failed\n");
         printf("RAW: %.120s\n", json_start);
-        return -1;
+        return WEATHER_ERR_PARSE;
     }
 
     // Navigate: root -> "daily" -> "temperature_2m_max" / "temperature_2m_min"
@@ -52,7 +54,7 @@ int fetch_weather(int temps_max[3], int temps_min[3])
     {
         printf("'daily' object missing\n");
         cJSON_Delete(root);
-        return -1;
+        return WEATHER_ERR_MISSING;
     }
 
     cJSON *maxArr = cJSON_GetObjectItem(daily, "temperature_2m_max");
@@ -77,6 +79,7 @@ int fetch_weather(int temps_max[3], int temps_min[3])
         printf("Day %d: High %dF / Low %dF\n", i, temps_max[i], temps_min[i]);
     }
 
+        
     cJSON_Delete(root);
     return 0;  // don't use `result` from http call — it may be non-zero on clean close
 }
@@ -98,10 +101,7 @@ err_t my_recv_fn(void *arg, struct altcp_pcb *conn, struct pbuf *p, err_t err)
     if (len > remaining)
         len = remaining;
 
-    pbuf_copy_partial(p,
-                      buffer_weather + buffer_index,
-                      len,
-                      0);
+    pbuf_copy_partial(p, buffer_weather + buffer_index, len, 0);
 
     buffer_index += len;
 

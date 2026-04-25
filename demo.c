@@ -43,15 +43,12 @@ int the_weather()
 
     cyw43_arch_enable_sta_mode();
 
-    while (cyw43_arch_wifi_connect_timeout_ms(
-        WIFI_SSID,
-        WIFI_PASSWORD,
-        CYW43_AUTH_WPA2_AES_PSK,
-        30000))
-    {
-        printf("Wi-Fi connect failed, retrying...\n");
-        sleep_ms(5000);
-    }
+    while (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD,
+                                              CYW43_AUTH_WPA2_AES_PSK, 30000))
+            {
+                printf("Wi-Fi connect failed, retrying...\n");
+                sleep_ms(5000);
+            }
 
     printf("Wi-Fi connected!\n");
 
@@ -59,23 +56,33 @@ int the_weather()
 
     while (true)
     {
+        if( cyw43_tcpip_link_status(&cyw43_state, CYW43_ITF_STA) != CYW43_LINK_UP) {
+            printf("WiFi lost, reconnecting...\n");
+            while (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD,
+                                              CYW43_AUTH_WPA2_AES_PSK, 30000))
+            {
+                printf("Reconnecting failed, retrying...\n");
+                sleep_ms(5000);
+            }
+            printf("Reconnected!\n");
+        }
+
         int attempt = 0;
         int result = -1;
 
+
+        draw_string(5, 5, "Updating...", ST7735_BLACK, ST7735_WHITE, 1);
         while (attempt < 5)
         {
-            printf("Fetching weather attempt %d...\n", attempt + 1);
-
             result = fetch_weather(temps_max, temps_min);
-
-            if (result == 0)
+            if (result == WEATHER_OK)
                 break;
-
-            sleep_ms(2000);
             attempt++;
+            if (attempt < 5) sleep_ms(2000); // only sleep if actually retrying
         }
+        draw_string(5, 5, "           ", ST7735_BLACK, ST7735_WHITE, 1);
 
-        if (result == 0)
+        if (result == WEATHER_OK)
         {
             for (int i = 0; i < 3; i++)
             {
@@ -86,7 +93,12 @@ int the_weather()
         }
         else
         {
-            printf("No valid weather data\n");
+            switch (result) {
+                case WEATHER_ERR_HTTP:    printf("HTTP request failed\n");   break;
+                case WEATHER_ERR_NO_JSON: printf("No JSON in response\n");   break;
+                case WEATHER_ERR_PARSE:   printf("JSON parse failed\n");     break;
+                case WEATHER_ERR_MISSING: printf("Missing expected field\n"); break;
+            }
         }
 
         printf("Sleeping...\n\n");
