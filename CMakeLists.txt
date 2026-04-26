@@ -51,7 +51,6 @@ endif()
 add_executable(ST7735_PICO 
     src/main.c 
     src/drivers/ST7735_TFT.c 
-    src/drivers/ST7735_Screens.c 
     src/drivers/fonts.c 
     demos/RTC/rtc.c
     src/weather/weather.c
@@ -92,6 +91,7 @@ pico_add_extra_outputs(ST7735_PICO)
 
 target_include_directories(ST7735_PICO PRIVATE include)
 target_include_directories(ST7735_PICO PRIVATE src)
+target_include_directories(ST7735_PICO PRIVATE src/config)
 
 
 # Ignore warnings from lwip code

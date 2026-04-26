@@ -2,11 +2,11 @@
 #include "pico/cyw43_arch.h"
 #include "pico/async_context.h"
 #include "lwip/altcp.h"
-#include "lwipopts.h"
-#include "http_client_util.h"
+#include "config/lwipopts.h"
+#include "lib/http_client_util.h"
 #include "weather.h"
-#include "cJSON.h"
-#include "ST7735_TFT.h"
+#include "lib/cJSON.h"
+#include "drivers/ST7735_TFT.h"
 
 static char buffer_weather[2048];
 static int buffer_index = 0;

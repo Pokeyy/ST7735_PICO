@@ -22,6 +22,7 @@ typedef enum {
     WEATHER_ERR_MISSING     = -4,
 } weather_err_t;
 
+void draw_weather_screen();
 weather_err_t fetch_weather(int temps_max[3], int temps_min[3]);
 err_t my_recv_fn(void *arg, struct altcp_pcb *conn, struct pbuf *p, err_t err);
 #endif

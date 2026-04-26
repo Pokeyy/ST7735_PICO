@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
-#include "hardware.h"
 #include "ST7735_TFT.h"
 #include "fonts.h"
 

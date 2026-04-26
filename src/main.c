@@ -2,12 +2,9 @@
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
 #include "hardware/gpio.h"
-#include "include/hardware.h"
-#include "include/ST7735_TFT.h"
-#include "include/ST7735_Screens.h"
-#include "demos/RTC/rtc.h"
-#include "ST7735_Screens.h"
-#include "weather.h"
+#include "drivers/ST7735_TFT.h"
+//#include "demos/RTC/rtc.h"
+#include "weather/weather.h"
 #include "pico/cyw43_arch.h"
 
 #define BUTTON 14
