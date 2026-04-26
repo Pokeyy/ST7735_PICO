@@ -27,11 +27,7 @@ void button_callback(uint gpio, uint32_t events) {
     gpio_put(25, led_value);
 }
 
-int the_weather()
-{
-    int temps_max[3], temps_min[3];
-    char temp_str[16];
-
+int wifi_connect() {
     sleep_ms(3000);
     printf("Starting WTTR.in Pico W client...\n");
 
@@ -53,6 +49,14 @@ int the_weather()
     printf("Wi-Fi connected!\n");
 
     sleep_ms(2000);
+}
+
+int the_weather()
+{
+    int temps_max[3], temps_min[3];
+    char temp_str[16];
+
+    wifi_connect();
 
     while (true)
     {

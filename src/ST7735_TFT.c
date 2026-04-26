@@ -23,6 +23,31 @@ st7735_pin_config_t interface_pins = {
     .spi_port = SPI_ST7735_PORT
 };
 
+void st7735_spi_init() {
+    spi_init(spi0, 1000*1000);
+    gpio_init(SPI_ST7735_CS);
+    gpio_set_dir(SPI_ST7735_CS, GPIO_OUT);
+    gpio_put(SPI_ST7735_CS, 1);                 // Chip select is active-low, so keep high when unselected
+
+    gpio_init(SPI_ST7735_RS);
+    gpio_set_dir(SPI_ST7735_RS, GPIO_OUT);
+    gpio_put(SPI_ST7735_RS, 0);
+
+    gpio_init(SPI_ST7735_RST);
+    gpio_set_dir(SPI_ST7735_RST, GPIO_OUT);
+    gpio_put(SPI_ST7735_RST, 0);
+
+    gpio_init(SPI_ST7735_LEDA);
+    gpio_set_dir(SPI_ST7735_LEDA, GPIO_OUT);
+    gpio_put(SPI_ST7735_LEDA, 1);
+
+    gpio_init(SPI_ST7735_SCK);
+    gpio_set_function(SPI_ST7735_SCK, GPIO_FUNC_SPI);
+
+    gpio_init(SPI_ST7735_MOSI);
+    gpio_set_function(SPI_ST7735_MOSI, GPIO_FUNC_SPI);
+}
+
 void write_command(uint8_t cmd) {
     tft_rs_low();
     tft_cs_low();
@@ -130,8 +155,11 @@ void draw_string(uint8_t x, uint8_t y, const char* str, uint16_t font_color, uin
 
     uint8_t x_start = x;
 
-    while(str[0]) { // while loop until the character at the index is not zero / '0'
-        if (str[0] == '\n') {
+    while(str[0]) { // while loop until the character at the index is not NULL terminator / '0'
+        if (str[0] == ' ') {
+            x += 4;
+        }
+        else if (str[0] == '\n') {
             x = x_start;
             y += 8 * size; // 7 pixels for height + 1 pixel spacing
         }

@@ -49,7 +49,7 @@ endif()
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(ST7735_PICO 
-    demo.c 
+    src/main.c 
     src/hardware.c 
     src/ST7735_TFT.c 
     src/ST7735_Screens.c 

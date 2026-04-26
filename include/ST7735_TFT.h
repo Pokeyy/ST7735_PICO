@@ -1,4 +1,7 @@
 
+#ifndef ST7735_TFT_H
+#define ST7735_TFT_H
+
 #include <stdint.h>
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
@@ -6,9 +9,6 @@
 // To Do List:
 // Adapt for all screen tab types
 // and insert adafruit commands for each one ig
-
-#ifndef ST7735_TFT_H
-#define ST7735_TFT_H
 
 // ST7735 Defines Part1 (Red / Green Tab)
 #define ST77XX_SWRESET              0x01
@@ -73,6 +73,46 @@
 #define ICON_WEATHER_CLOUD          0x01
 #define ICON_WEATHER_RAIN           0x02
 
+
+
+// Pin are ports (defined in makefile typically?)
+
+// SPI Port
+#ifndef SPI_ST7735_PORT
+    #define SPI_ST7735_PORT spi0
+#endif
+
+// Chip-Select Output Pin
+#ifndef SPI_ST7735_CS
+    #define SPI_ST7735_CS                   19
+#endif
+
+// ST7735 DC/RS Output Pin
+#ifndef SPI_ST7735_RS
+    #define SPI_ST7735_RS                   18
+#endif
+
+// Reset Output Pin
+#ifndef SPI_ST7735_RST
+    #define SPI_ST7735_RST                  17
+#endif
+
+#ifndef SPI_ST7735_LEDA
+    #define SPI_ST7735_LEDA                 16
+#endif
+
+#ifndef SPI_ST7735_MOSI                                // unsure if needs to be defined
+    #define SPI_ST7735_MOSI                 3
+#endif
+
+#ifndef SPI_ST7735_SCK                                 // unsure if needs to be defined
+    #define SPI_ST7735_SCK                  2
+#endif
+
+#ifndef ST7735_SW_SCREENS
+    #define ST7735_SW_SCREENS               14
+#endif
+
 extern uint8_t disp_width, disp_height;
 
 typedef struct {
@@ -85,9 +125,40 @@ typedef struct {
 /********************** FUNCTION PROTOTYPES ***************/
 // Some functions taken from: https://github.com/bablokb/pico-st7735/ 
 
+static inline void tft_cs_low() {                       // Timing found at Pg25 (unsure about exact # of NOP uses)
+    asm volatile("nop \n nop \n nop"); \
+    gpio_put(SPI_ST7735_CS, 0);
+    asm volatile("nop \n nop \n nop"); \
+    asm volatile("nop \n nop \n nop"); \
+}
+
+static inline void tft_cs_high() {
+    asm volatile("nop \n nop \n nop"); \
+    gpio_put(SPI_ST7735_CS, 1);
+    asm volatile("nop \n nop \n nop"); \
+}
+
+static inline void tft_rs_low() {
+    asm volatile("nop \n nop \n nop"); \
+    gpio_put(SPI_ST7735_RS, 0);
+    asm volatile("nop \n nop \n nop"); \
+}
+
+static inline void tft_rs_high() {
+    asm volatile("nop \n nop \n nop"); \
+    gpio_put(SPI_ST7735_RS, 1);
+    asm volatile("nop \n nop \n nop"); \
+}
+
+static inline void spi_write(uint8_t data) {
+    spi_write_blocking(SPI_ST7735_PORT, &data, 1);
+}
+
 // For SPI:
 void write_command(uint8_t cmd);
 void write_data(uint8_t data);
+// Declarations / Prototyping
+void st7735_spi_init();
 
 
 /*
