@@ -50,14 +50,13 @@ endif()
 
 add_executable(ST7735_PICO 
     src/main.c 
-    src/hardware.c 
-    src/ST7735_TFT.c 
-    src/ST7735_Screens.c 
-    src/fonts.c 
+    src/drivers/ST7735_TFT.c 
+    src/drivers/ST7735_Screens.c 
+    src/drivers/fonts.c 
     demos/RTC/rtc.c
-    src/weather.c
-    src/http_client_util.c
-    src/cJSON.c
+    src/weather/weather.c
+    src/lib/http_client_util.c
+    src/lib/cJSON.c
 ) 
 
 #target_compile_definitions(ST7735_PICO PRIVATE PICO_ENTER_USB_BOOT_ON_EXIT=1)

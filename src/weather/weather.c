@@ -6,6 +6,7 @@
 #include "http_client_util.h"
 #include "weather.h"
 #include "cJSON.h"
+#include "ST7735_TFT.h"
 
 static char buffer_weather[2048];
 static int buffer_index = 0;
@@ -82,6 +83,20 @@ weather_err_t fetch_weather(int temps_max[3], int temps_min[3])
         
     cJSON_Delete(root);
     return 0;  // don't use `result` from http call — it may be non-zero on clean close
+}
+
+void draw_weather_screen() {
+    draw_string(40, 10, "NWS", ST7735_BLUE, ST7735_WHITE, 3);
+    draw_string(20, 40, "Nguyen Weather Service", ST7735_BLACK, ST7735_WHITE, 1);
+    
+    draw_string(40, 60, "67", ST7735_BLACK, ST7735_WHITE, 2);
+    draw_bitmap(40, 80, ICON_WEATHER_CLOUD, ST7735_GRAY_MEDIUM, ST7735_WHITE, 3);
+
+    draw_string(75, 60, "69", ST7735_BLACK, ST7735_WHITE, 2);
+    draw_bitmap(75, 80, ICON_WEATHER_CLOUD, ST7735_GRAY_DARK, ST7735_WHITE, 3);
+
+    draw_string(110, 60, "39", ST7735_BLACK, ST7735_WHITE, 2);
+    draw_bitmap(110, 80, ICON_WEATHER_CLOUD, ST7735_BLACK, ST7735_WHITE, 3);
 }
 
 err_t my_recv_fn(void *arg, struct altcp_pcb *conn, struct pbuf *p, err_t err)
