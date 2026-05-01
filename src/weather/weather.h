@@ -22,6 +22,7 @@ typedef enum {
     WEATHER_ERR_MISSING     = -4,
 } weather_err_t;
 
+void weather_task(void *pvParameters);
 void draw_weather_screen();
 int the_weather();
 weather_err_t fetch_weather(int temps_max[3], int temps_min[3]);

@@ -8,9 +8,15 @@
 #include "lib/cJSON.h"
 #include "drivers/ST7735_TFT.h"
 #include "wifi/wifi.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 static char buffer_weather[2048];
 static int buffer_index = 0;
+
+void weather_task(void *pvParameters) { 
+    the_weather(); 
+}
 
 weather_err_t fetch_weather(int temps_max[3], int temps_min[3])
 {
@@ -88,6 +94,7 @@ weather_err_t fetch_weather(int temps_max[3], int temps_min[3])
 
 int the_weather()
 {
+    printf("the_weather called\n");
     int temps_max[3], temps_min[3];
     char temp_str[16];
 
@@ -123,6 +130,7 @@ int the_weather()
 
         if (result == WEATHER_OK)
         {
+            printf("Stack HWM: %d words\n", uxTaskGetStackHighWaterMark(NULL));
             for (int i = 0; i < 3; i++)
             {
                 char line[24];

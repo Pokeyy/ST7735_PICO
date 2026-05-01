@@ -6,6 +6,9 @@
 //#include "demos/RTC/rtc.h"
 #include "weather/weather.h"
 #include "pico/cyw43_arch.h"
+#include "FreeRTOS.h"
+#include "task.h"
+#include "timers.h"
 
 #define BUTTON 14
 
@@ -46,51 +49,18 @@ int main() {
     fill_screen(ST7735_WHITE);
 
     sleep_ms(1500);
+    printf("task creating.. \n");
 
-    the_weather();
+    BaseType_t result = xTaskCreate(weather_task, "WeatherTask", 4096, NULL, 1, NULL
+    );
+    printf("xTaskCreate result: %d\n", result);  // 1 = success
+    printf("task created, starting scheduler\n");
+    vTaskStartScheduler();
+    while(true);
 }
 
-int main1()
-{
-    stdio_init_all();
-    sleep_ms(50); // small delay
-    while(!stdio_usb_connected()) {
-        tight_loop_contents();
-    }
-    sleep_ms(50);
-    
-    
-    st7735_spi_init();
-
-    gpio_init(25);
-    gpio_set_dir(25, GPIO_OUT);
 
 
-    st7735_init_display();
-    set_rotation(ROTATION_90); //
-    fill_screen(ST7735_WHITE);
-
-    sleep_ms(1500);
-    draw_weather_screen();
-
-    draw_bitmap(75, 55, ICON_WEATHER_SUN, ST7735_YELLOW, ST7735_WHITE, 3);
-
-    sleep_ms(2000);
-    draw_bitmap(35, 80, ICON_WEATHER_CLOUD, ST7735_GRAY_LIGHT, ST7735_WHITE, 3);
-    draw_bitmap(60, 80, ICON_WEATHER_CLOUD, ST7735_GRAY_MEDIUM, ST7735_WHITE, 3);
-    draw_bitmap(85, 80, ICON_WEATHER_CLOUD, ST7735_GRAY_DARK, ST7735_WHITE, 3);
-    draw_bitmap(110, 80, ICON_WEATHER_CLOUD, ST7735_BLACK, ST7735_WHITE, 3);
-
-    while (true) {
-
-    // Or just keep it tight loop if you don't want LED blinking:
-    tight_loop_contents();
-    }
-
-
-
-
-}
 
         //aon_timer_read();
     //ao_timer_demo();
