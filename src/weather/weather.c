@@ -7,6 +7,7 @@
 #include "weather.h"
 #include "lib/cJSON.h"
 #include "drivers/ST7735_TFT.h"
+#include "wifi/wifi.h"
 
 static char buffer_weather[2048];
 static int buffer_index = 0;
@@ -85,18 +86,77 @@ weather_err_t fetch_weather(int temps_max[3], int temps_min[3])
     return 0;  // don't use `result` from http call — it may be non-zero on clean close
 }
 
+int the_weather()
+{
+    int temps_max[3], temps_min[3];
+    char temp_str[16];
+
+    wifi_connect();
+    draw_weather_screen();
+    while (true)
+    {
+        if( cyw43_tcpip_link_status(&cyw43_state, CYW43_ITF_STA) != CYW43_LINK_UP) {
+            printf("WiFi lost, reconnecting...\n");
+            while (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD,
+                                              CYW43_AUTH_WPA2_AES_PSK, 30000))
+            {
+                printf("Reconnecting failed, retrying...\n");
+                sleep_ms(5000);
+            }
+            printf("Reconnected!\n");
+        }
+
+        int attempt = 0;
+        int result = -1;
+
+
+        draw_string(5, 100, "Updating...", ST7735_BLACK, ST7735_WHITE, 1);
+        while (attempt < 5)
+        {
+            result = fetch_weather(temps_max, temps_min);
+            if (result == WEATHER_OK)
+                break;
+            attempt++;
+            if (attempt < 5) sleep_ms(2000); // only sleep if actually retrying
+        }
+        fill_rectangle(5, 100, 85, 9, ST7735_WHITE);
+
+        if (result == WEATHER_OK)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                char line[24];
+                snprintf(line, sizeof(line), "D%d %dF/%dF", i+1, temps_max[i], temps_min[i]);
+                draw_string(10, 55 + (i * 20), line, ST7735_BLACK, ST7735_WHITE, 1);
+            }
+        }
+        else
+        {
+            switch (result) {
+                case WEATHER_ERR_HTTP:    printf("HTTP request failed\n");   break;
+                case WEATHER_ERR_NO_JSON: printf("No JSON in response\n");   break;
+                case WEATHER_ERR_PARSE:   printf("JSON parse failed\n");     break;
+                case WEATHER_ERR_MISSING: printf("Missing expected field\n"); break;
+            }
+        }
+
+        printf("Sleeping...\n\n");
+        sleep_ms(FETCH_INTERVAL_MS);
+    }
+
+    cyw43_arch_deinit();
+    return 0;
+}
+
 void draw_weather_screen() {
-    draw_string(40, 10, "NWS", ST7735_BLUE, ST7735_WHITE, 3);
-    draw_string(20, 40, "Nguyen Weather Service", ST7735_BLACK, ST7735_WHITE, 1);
+    draw_string(55, 10, "NWS", ST7735_BLUE, ST7735_WHITE, 3);
+    draw_string(25, 32, "Nguyen Weather Service", ST7735_BLACK, ST7735_WHITE, 1);
     
-    draw_string(40, 60, "67", ST7735_BLACK, ST7735_WHITE, 2);
-    draw_bitmap(40, 80, ICON_WEATHER_CLOUD, ST7735_GRAY_MEDIUM, ST7735_WHITE, 3);
+    draw_bitmap(75, 45, ICON_WEATHER_SUN, ST7735_YELLOW, ST7735_WHITE, 3);
 
-    draw_string(75, 60, "69", ST7735_BLACK, ST7735_WHITE, 2);
-    draw_bitmap(75, 80, ICON_WEATHER_CLOUD, ST7735_GRAY_DARK, ST7735_WHITE, 3);
+    draw_bitmap(75, 70, ICON_WEATHER_SUN, ST7735_YELLOW, ST7735_WHITE, 3);
 
-    draw_string(110, 60, "39", ST7735_BLACK, ST7735_WHITE, 2);
-    draw_bitmap(110, 80, ICON_WEATHER_CLOUD, ST7735_BLACK, ST7735_WHITE, 3);
+    draw_bitmap(75, 95, ICON_WEATHER_SUN, ST7735_YELLOW, ST7735_WHITE, 3);
 }
 
 err_t my_recv_fn(void *arg, struct altcp_pcb *conn, struct pbuf *p, err_t err)

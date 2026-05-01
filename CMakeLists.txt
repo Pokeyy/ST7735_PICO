@@ -46,6 +46,32 @@ if (NOT DEFINED WIFI_PASSWORD)
     set(WIFI_PASSEORD "")
 endif()
 
+# FreeRTOS
+set(FREERTOS_KERNEL_PATH ${CMAKE_CURRENT_LIST_DIR}/FreeRTOS-Kernel)
+include(FreeRTOS_Kernel_import.cmake)
+
+# # Fetching RTOS Kernel
+# include(FetchContent)
+
+# add_library(freertos_config INTERFACE)
+
+# target_include_directories(freertos_config SYSTEM INTERFACE
+#     src/config
+# )
+
+# target_compile_definitions(freertos_config
+#   INTERFACE
+#     projCOVERAGE_TEST=0
+# )
+
+# set(FREERTOS_HEAP "4" CACHE STRING "" FORCE)
+# set(FREERTOS_PORT "GCC_ARM_CM33_NTZ" CACHE STRING "" FORCE)
+
+# if(CMAKE_CROSSCOMPILING)
+# FetchContent_MakeAvailable(freertos_lernel)
+
+# include(FreeRTOS_Kernel_import.cmake)
+
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(ST7735_PICO 
@@ -56,6 +82,7 @@ add_executable(ST7735_PICO
     src/weather/weather.c
     src/lib/http_client_util.c
     src/lib/cJSON.c
+    src/wifi/wifi.c
 ) 
 
 #target_compile_definitions(ST7735_PICO PRIVATE PICO_ENTER_USB_BOOT_ON_EXIT=1)
@@ -74,6 +101,7 @@ target_compile_definitions(ST7735_PICO PRIVATE
         )
 
 
+
 # Add the standard library to the build
 target_link_libraries(ST7735_PICO
         pico_stdlib
@@ -83,6 +111,7 @@ target_link_libraries(ST7735_PICO
         pico_lwip_http
         pico_lwip_mbedtls
         pico_mbedtls
+        FreeRTOS-Kernel-Heap4
         )
 
 
@@ -100,3 +129,5 @@ set_source_files_properties(
         PROPERTIES
         COMPILE_OPTIONS "-Wno-unused-result"
         )
+
+
