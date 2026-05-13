@@ -9,6 +9,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "timers.h"
+#include "wifi/wifi.h"
 
 #define BUTTON 14
 
@@ -47,27 +48,23 @@ int main() {
     st7735_init_display();
     set_rotation(ROTATION_90); //
     fill_screen(ST7735_WHITE);
-
     sleep_ms(1500);
     printf("task creating.. \n");
 
-    BaseType_t result = xTaskCreate(weather_task, "WeatherTask", 4096, NULL, 1, NULL
-    );
+    wifi_group = xEventGroupCreate();
+
+    if (wifi_group == NULL) {
+        panic("Not enough heap space. Initiating panic and halting execution!!\n");
+    }
+    else {
+        printf("Event group for Wi-Fi task created successfully!\n");
+    }
+
+
+    BaseType_t wifi_task = xTaskCreate(wifi_task, "WiFiTask", 4096, NULL, 1, NULL);
+    BaseType_t result = xTaskCreate(weather_task, "WeatherTask", 4096, NULL, 1, NULL);
     printf("xTaskCreate result: %d\n", result);  // 1 = success
     printf("task created, starting scheduler\n");
     vTaskStartScheduler();
     while(true);
 }
-
-
-
-
-        //aon_timer_read();
-    //ao_timer_demo();
-    // gpio_init(BUTTON);
-    // gpio_set_dir(BUTTON, GPIO_IN);
-    // gpio_pull_up(BUTTON);
-    // gpio_set_irq_enabled_with_callback(BUTTON, GPIO_IRQ_EDGE_FALL, 1, button_callback); // falling edge for interrupt, rising edge is 0x08
-
-    //repeating_timer_t timer;
-    //add_repeating_timer_ms(500, repeating_timer_callback, NULL, &timer);

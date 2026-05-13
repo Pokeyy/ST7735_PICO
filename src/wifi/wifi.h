@@ -1,7 +1,10 @@
 #ifndef WIFI_H 
 #define WIFI_H
 #include "pico/cyw43_arch.h"
+#include "event_groups.h"
 
-int wifi_connect();
+EventGroupHandle_t wifi_group;
+
+int wifi_task();
 
 #endif
