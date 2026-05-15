@@ -3,7 +3,7 @@
 #include "task.h"
 #include "timers.h"
 
-int wifi_task() {
+void wifi_task(void *pvParameters) {
     printf("Starting WTTR.in Pico W client...\n");
 
     if (cyw43_arch_init())
@@ -33,9 +33,7 @@ int wifi_task() {
             }
             xEventGroupSetBits(wifi_group, 0x01);
             printf("Wi-Fi reconnected!\n");
-            vTaskDelay(pdMS_TO_TICKS(5000));
         }
         vTaskDelay(pdMS_TO_TICKS(5000));
     }
-
 }

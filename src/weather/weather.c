@@ -92,26 +92,16 @@ weather_err_t fetch_weather(int temps_max[3], int temps_min[3])
     return 0;  // don't use `result` from http call — it may be non-zero on clean close
 }
 
-int the_weather()
+void weather_task(void *pvParameters)
 {
     printf("the_weather called\n");
     int temps_max[3], temps_min[3];
     char temp_str[16];
 
-    wifi_connect();
     draw_weather_screen();
+    xEventGroupWaitBits(wifi_group, 0x01, pdFALSE, pdTRUE, pdMS_TO_TICKS(2000));
     while (true)
     {
-        if( cyw43_tcpip_link_status(&cyw43_state, CYW43_ITF_STA) != CYW43_LINK_UP) {
-            printf("WiFi lost, reconnecting...\n");
-            while (cyw43_arch_wifi_connect_timeout_ms(WIFI_SSID, WIFI_PASSWORD,
-                                              CYW43_AUTH_WPA2_AES_PSK, 30000))
-            {
-                printf("Reconnecting failed, retrying...\n");
-                sleep_ms(5000);
-            }
-            printf("Reconnected!\n");
-        }
 
         int attempt = 0;
         int result = -1;
@@ -124,7 +114,7 @@ int the_weather()
             if (result == WEATHER_OK)
                 break;
             attempt++;
-            if (attempt < 5) sleep_ms(2000); // only sleep if actually retrying
+            if (attempt < 5) vTaskDelay(pdMS_TO_TICKS(2000)); // only sleep if actually retrying
         }
         fill_rectangle(5, 100, 85, 9, ST7735_WHITE);
 
@@ -149,22 +139,11 @@ int the_weather()
         }
 
         printf("Sleeping...\n\n");
-        sleep_ms(FETCH_INTERVAL_MS);
+        vTaskDelay(pdMS_TO_TICKS(FETCH_INTERVAL_MS));
     }
 
     cyw43_arch_deinit();
     return 0;
-}
-
-void draw_weather_screen() {
-    draw_string(55, 10, "NWS", ST7735_BLUE, ST7735_WHITE, 3);
-    draw_string(25, 32, "Nguyen Weather Service", ST7735_BLACK, ST7735_WHITE, 1);
-    
-    draw_bitmap(75, 45, ICON_WEATHER_SUN, ST7735_YELLOW, ST7735_WHITE, 3);
-
-    draw_bitmap(75, 70, ICON_WEATHER_SUN, ST7735_YELLOW, ST7735_WHITE, 3);
-
-    draw_bitmap(75, 95, ICON_WEATHER_SUN, ST7735_YELLOW, ST7735_WHITE, 3);
 }
 
 err_t my_recv_fn(void *arg, struct altcp_pcb *conn, struct pbuf *p, err_t err)

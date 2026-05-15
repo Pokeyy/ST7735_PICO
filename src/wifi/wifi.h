@@ -5,6 +5,6 @@
 
 EventGroupHandle_t wifi_group;
 
-int wifi_task();
+void wifi_task(void *pvParameters);
 
 #endif
